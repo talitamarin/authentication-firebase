@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View , Image, DrawerLayoutAndroidBase} from 'react-native';
+import { View , Image} from 'react-native';
 import Botao from '../../componentes/Botao';
 import { EntradaTexto } from '../../componentes/EntradaTexto';
 import estilos from './estilos';
@@ -8,6 +8,8 @@ import { Alerta } from '../../componentes/Alerta';
 import { auth } from '../../config/firebase';
 import animacaoCarregando from '../../../assets/carregandoo.gif'
 import { alteraDados } from '../../utils/comum';
+import { entradas } from './entradas';
+
 
 export default function Login({ navigation }) {
   
@@ -31,24 +33,33 @@ export default function Login({ navigation }) {
     return () => estadoUsuario
   }, [])
 
-  async function realizarLogin() {
-    if(dados.email == ''){
-      setMensagemError('O e-mail é obrigatório!');
-      setStatusError('email');
-    } else if(dados.senha == ''){
-      setMensagemError('A senha é obrigatória!');
-      setStatusError('senha');
-     } else {
-      const resultado = await logar(dados.email, dados.senha)
-        if(resultado == 'erro') {
-          setStatusError('firebase')
-          setMensagemError('E-mail ou senha não conferem')
-        }
-        else {
-          navigation.navigate('Principal')
-        }
-      } 
+
+  function verificaSeTemEntradaVazia(){
+    for(const [variavel, valor] of Object.entries(dados)){
+      if(valor == '') {
+       setDados({
+        ...dados,
+        [variavel]: null
+       })
+        return true
+      }
+    }
+    return false
   }
+
+
+  async function realizarLogin() {
+    //função para verificar se e-mail ou senha são vazios
+    if(verificaSeTemEntradaVazia()) return
+
+    const resultado = await logar(dados.email, dados.senha)
+    if(resultado == 'erro'){
+      setStatusError(true)
+      setMensagemError('E-mail ou senha não conferem')
+    }
+    navigation.replace('Principal')
+  }
+
   if(carregando) {
     return (
       <View style={estilos.containerAnimacao}> 
@@ -59,28 +70,22 @@ export default function Login({ navigation }) {
     )
   }
 
-
   return (
     <View style={estilos.container}>
-      <EntradaTexto 
-        label="E-mail"
-        value={dados.email}
-        onChangeText={valor => alteraDados('email', valor, dados, setDados)}
-        error={statusError == 'email'}
-        messageError={mensagemError}
-      />
-      <EntradaTexto
-        label="Senha"
-        value={dados.senha}
-        onChangeText={valor => alteraDados('senha', valor, dados, setDados)}
-        secureTextEntry
-        error={statusError == 'senha'}
-        messageError={mensagemError}
-      />
-      
+    {
+      entradas.map((entrada) => {
+        return (<EntradaTexto
+                  key={entrada.id}
+                  {...entrada}
+                  value={dados[entrada.name]}
+                  onChangeText={valor => alteraDados(entrada.name, valor, dados, setDados)}
+                  />
+          )
+      })
+    }
     <Alerta 
     mensagem={mensagemError}
-    error={statusError =='firebase'}
+    error={statusError}
     setError={setStatusError}
     />
 

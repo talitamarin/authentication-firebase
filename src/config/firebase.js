@@ -13,13 +13,13 @@ import {
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBuYXyBIgeGx1mCb_EDQSDxkVDr_0EZ-Lo",
-  authDomain: "mobsport-417ad.firebaseapp.com",
-  projectId: "mobsport-417ad",
-  storageBucket: "mobsport-417ad.appspot.com",
-  messagingSenderId: "707235805875",
-  appId: "1:707235805875:web:46c73ee6a029a4748f8ec6",
-  measurementId: "G-GGKXQE8FR1"
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: APP_ID,
+  measurementId: MEASUREMENT_ID
 };
 
 // Initialize Firebase
